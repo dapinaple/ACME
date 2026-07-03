@@ -27,16 +27,21 @@
     <main>
       <section id="login-section" class="card">
         <h2>Sign in to ACME for U</h2>
-        <p class="hint">Uses your existing ACME Markets account. Credentials are sent only to Albertsons' login service from this server.</p>
+        <p class="hint">Sign in with the same phone number or email you use for ACME for U.</p>
+
+        <div class="notice">
+          <strong>Signed up in the app with text verification only?</strong>
+          <p>You need to create a password first. Use <a href="https://www.acmemarkets.com/account/forgot-password.html" target="_blank" rel="noopener">Forgot Password</a> on acmemarkets.com with your phone number, then sign in here with that phone number and your new password.</p>
+        </div>
 
         <form id="login-form">
           <label>
-            Email
-            <input type="email" id="email" autocomplete="username" required placeholder="you@example.com">
+            Phone or email
+            <input type="text" id="email" autocomplete="username" required placeholder="(555) 555-1234 or you@example.com" inputmode="email">
           </label>
           <label>
             Password
-            <input type="password" id="password" autocomplete="current-password" required>
+            <input type="password" id="password" autocomplete="current-password" required placeholder="Set one via Forgot Password if needed">
           </label>
 
           <div class="store-finder">

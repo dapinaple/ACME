@@ -89,6 +89,26 @@ h2 {
   box-shadow: var(--shadow);
 }
 
+.notice {
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff8e6;
+  border: 1px solid #f2d27b;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.notice p {
+  margin: 6px 0 0;
+  color: var(--text);
+}
+
+.notice a {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 label {
   display: block;
   margin-bottom: 12px;

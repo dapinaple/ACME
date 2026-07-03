@@ -264,7 +264,12 @@ loginForm.addEventListener("submit", async (event) => {
     await refreshMatches();
     showToast("Signed in successfully");
   } catch (error) {
-    showToast(error.message);
+    const message = String(error.message || "Sign in failed");
+    if (/invalid|credential|password|unauthorized|auth/i.test(message)) {
+      showToast("Sign in failed. App-only accounts need a password — use Forgot Password on acmemarkets.com first.");
+    } else {
+      showToast(message);
+    }
   } finally {
     setLoading(loginBtn, false);
   }

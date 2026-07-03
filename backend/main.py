@@ -27,7 +27,7 @@ local_lists: dict[str, list[str]] = {}
 
 
 class LoginRequest(BaseModel):
-    email: str
+    email: str = Field(description="ACME for U phone number or email address")
     password: str
     store_id: str = Field(min_length=1, description="Your ACME store ID")
 

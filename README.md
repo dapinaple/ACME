@@ -11,9 +11,24 @@ A mobile-friendly web app that automatically clips **ACME Markets** digital coup
 
 ACME does **not** offer a public developer API. This app uses the same internal platform that powers the ACME/Safeway mobile apps (Albertsons Okta login + Nimbus coupon services). That means:
 
-- You need your normal ACME login email and password
-- You need your local **Store ID** (see below)
+- You need your ACME for U **phone number or email** and a **password**
+- You need your local **Store ID** (use ZIP lookup in the app — see below)
 - The app should be run on a server **you control** (your computer, a VPS, or Docker) — credentials are sent to Albertsons' login service from that server, not stored permanently
+
+## App-only account? (phone verification, no password)
+
+If you created your ACME account in the mobile app using **text message verification** and never set a password, this clipper cannot sign you in yet — it uses password login, not SMS codes.
+
+**Fix (one time, ~2 minutes):**
+
+1. Go to [acmemarkets.com Forgot Password](https://www.acmemarkets.com/account/forgot-password.html)
+2. Enter the **phone number** tied to your ACME for U account
+3. Complete the verification text and **create a password**
+4. Return to this app and sign in with that **phone number + password**
+
+ACME's own FAQ recommends the Forgot Password flow when you have an account but don't know your password.
+
+**Why not SMS login in this app?** The ACME app uses a private phone-verification flow that isn't available to third-party tools. Password login is the supported workaround.
 
 ## Quick start (Docker)
 
@@ -92,6 +107,7 @@ frontend/
 
 - ACME may change their internal APIs at any time
 - Grocery list sync depends on what the ACME backend exposes for your account; you can always add items manually
+- Accounts created app-only with SMS verification require setting a password via Forgot Password before this app can sign in
 - Multi-factor authentication on your ACME account may block password-based login
 
 ## Development
