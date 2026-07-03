@@ -15,7 +15,14 @@ const emptyListEl = document.getElementById("empty-list");
 const matchSummaryEl = document.getElementById("match-summary");
 const clipResultEl = document.getElementById("clip-result");
 const toastEl = document.getElementById("toast");
+const findStoresBtn = document.getElementById("find-stores-btn");
+const storeResultsEl = document.getElementById("store-results");
+const selectedStoreEl = document.getElementById("selected-store");
+const storeIdInput = document.getElementById("store-id");
+const manualStoreIdInput = document.getElementById("manual-store-id");
+const loginBtn = document.getElementById("login-btn");
 
+let selectedStore = null;
 let session = loadSession();
 
 function loadSession() {
@@ -67,6 +74,68 @@ function setLoading(button, loading, label) {
   button.disabled = loading;
   button.dataset.label = button.dataset.label || button.textContent;
   button.textContent = loading ? label : button.dataset.label;
+}
+
+function updateLoginReady() {
+  const manualId = manualStoreIdInput.value.trim();
+  const activeId = selectedStore?.store_id || manualId;
+  storeIdInput.value = activeId;
+  loginBtn.disabled = !activeId;
+}
+
+function renderStoreResults(stores) {
+  storeResultsEl.innerHTML = "";
+  if (!stores.length) {
+    storeResultsEl.classList.add("hidden");
+    showToast("No ACME stores found for that ZIP code");
+    return;
+  }
+
+  storeResultsEl.classList.remove("hidden");
+  for (const store of stores) {
+    const li = document.createElement("li");
+    if (selectedStore?.store_id === store.store_id) {
+      li.classList.add("selected");
+    }
+
+    const title = document.createElement("div");
+    title.className = "store-title";
+    title.textContent = `${store.address}, ${store.city}`;
+
+    const meta = document.createElement("div");
+    meta.className = "store-meta";
+    const distance = store.distance_miles ? `${store.distance_miles} mi • ` : "";
+    meta.textContent = `${distance}Store ID ${store.store_id} • ${store.zip_code}`;
+
+    li.append(title, meta);
+    li.addEventListener("click", () => {
+      selectedStore = store;
+      manualStoreIdInput.value = "";
+      selectedStoreEl.textContent = `Selected: ${store.address}, ${store.city} (ID ${store.store_id})`;
+      selectedStoreEl.classList.remove("hidden");
+      renderStoreResults(stores);
+      updateLoginReady();
+    });
+    storeResultsEl.appendChild(li);
+  }
+}
+
+async function findStores() {
+  const zip = document.getElementById("zip-code").value.trim();
+  if (!/^\d{5}$/.test(zip)) {
+    showToast("Enter a 5-digit ZIP code");
+    return;
+  }
+
+  setLoading(findStoresBtn, true, "Searching...");
+  try {
+    const data = await api(`/api/stores/search?zip=${encodeURIComponent(zip)}`);
+    renderStoreResults(data.stores || []);
+  } catch (error) {
+    showToast(error.message);
+  } finally {
+    setLoading(findStoresBtn, false);
+  }
 }
 
 function renderGroceryList(items) {
@@ -167,15 +236,18 @@ async function bootstrap() {
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const loginBtn = document.getElementById("login-btn");
   setLoading(loginBtn, true, "Signing in...");
 
   try {
     const payload = {
       email: document.getElementById("email").value.trim(),
       password: document.getElementById("password").value,
-      store_id: document.getElementById("store-id").value.trim(),
+      store_id: storeIdInput.value.trim(),
     };
+
+    if (!payload.store_id) {
+      throw new Error("Pick your store from the list or enter a Store ID");
+    }
 
     const data = await api("/api/auth/login", {
       method: "POST",
@@ -197,6 +269,25 @@ loginForm.addEventListener("submit", async (event) => {
     setLoading(loginBtn, false);
   }
 });
+
+findStoresBtn.addEventListener("click", findStores);
+document.getElementById("zip-code").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    findStores();
+  }
+});
+
+manualStoreIdInput.addEventListener("input", () => {
+  if (manualStoreIdInput.value.trim()) {
+    selectedStore = null;
+    selectedStoreEl.classList.add("hidden");
+    storeResultsEl.querySelectorAll("li").forEach((item) => item.classList.remove("selected"));
+  }
+  updateLoginReady();
+});
+
+updateLoginReady();
 
 logoutBtn.addEventListener("click", async () => {
   try {

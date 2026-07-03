@@ -38,19 +38,30 @@
             Password
             <input type="password" id="password" autocomplete="current-password" required>
           </label>
-          <label>
-            Store ID
-            <input type="text" id="store-id" inputmode="numeric" pattern="[0-9]+" required placeholder="e.g. 2948">
-          </label>
+
+          <div class="store-finder">
+            <label>
+              Find your store
+              <div class="inline-form">
+                <input type="text" id="zip-code" inputmode="numeric" maxlength="5" placeholder="ZIP code (e.g. 19103)">
+                <button type="button" class="btn secondary small" id="find-stores-btn">Find Stores</button>
+              </div>
+            </label>
+            <p class="hint">Enter your ZIP code and pick your ACME location. No store code hunting required.</p>
+            <ul id="store-results" class="store-results hidden"></ul>
+            <input type="hidden" id="store-id" required>
+            <p id="selected-store" class="selected-store hidden"></p>
+          </div>
+
           <details class="help">
-            <summary>How do I find my Store ID?</summary>
-            <ol>
-              <li>Go to <a href="https://local.acmemarkets.com/acme.html" target="_blank" rel="noopener">local.acmemarkets.com</a></li>
-              <li>Find your store and hover over "Weekly Ad"</li>
-              <li>Look for <code>storeId=####</code> in the link URL</li>
-            </ol>
+            <summary>Already know your Store ID?</summary>
+            <label>
+              Store ID
+              <input type="text" id="manual-store-id" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 2668">
+            </label>
+            <p class="hint">Optional. You can also find it in the ACME app under Account → My Store, or on a weekly ad link as <code>storeId=####</code>.</p>
           </details>
-          <button type="submit" class="btn primary" id="login-btn">Sign In</button>
+          <button type="submit" class="btn primary" id="login-btn" disabled>Sign In</button>
         </form>
       </section>
 
