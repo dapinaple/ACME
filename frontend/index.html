@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#c8102e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ACME Clipper">
+  <title>ACME Coupon Clipper</title>
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="apple-touch-icon" href="/static/icon-192.png">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark">A</span>
+        <div>
+          <h1>ACME Clipper</h1>
+          <p class="subtitle">Clip coupons for your grocery list</p>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="login-section" class="card">
+        <h2>Sign in to ACME for U</h2>
+        <p class="hint">Uses your existing ACME Markets account. Credentials are sent only to Albertsons' login service from this server.</p>
+
+        <form id="login-form">
+          <label>
+            Email
+            <input type="email" id="email" autocomplete="username" required placeholder="you@example.com">
+          </label>
+          <label>
+            Password
+            <input type="password" id="password" autocomplete="current-password" required>
+          </label>
+          <label>
+            Store ID
+            <input type="text" id="store-id" inputmode="numeric" pattern="[0-9]+" required placeholder="e.g. 2948">
+          </label>
+          <details class="help">
+            <summary>How do I find my Store ID?</summary>
+            <ol>
+              <li>Go to <a href="https://local.acmemarkets.com/acme.html" target="_blank" rel="noopener">local.acmemarkets.com</a></li>
+              <li>Find your store and hover over "Weekly Ad"</li>
+              <li>Look for <code>storeId=####</code> in the link URL</li>
+            </ol>
+          </details>
+          <button type="submit" class="btn primary" id="login-btn">Sign In</button>
+        </form>
+      </section>
+
+      <section id="dashboard" class="hidden">
+        <div class="status-bar card">
+          <div>
+            <strong id="user-email"></strong>
+            <span class="muted">Store <span id="user-store"></span></span>
+          </div>
+          <button id="logout-btn" class="btn ghost">Sign Out</button>
+        </div>
+
+        <section class="card">
+          <div class="section-head">
+            <h2>Grocery List</h2>
+            <button id="sync-list-btn" class="btn secondary small">Sync from ACME</button>
+          </div>
+          <p class="hint">Add items you plan to buy. We'll match them to available digital coupons.</p>
+
+          <form id="add-item-form" class="inline-form">
+            <input type="text" id="new-item" placeholder="e.g. milk, chicken, cereal" autocomplete="off">
+            <button type="submit" class="btn primary small">Add</button>
+          </form>
+
+          <ul id="grocery-list" class="item-list"></ul>
+          <p id="empty-list" class="empty">No items yet. Add a few groceries to get started.</p>
+        </section>
+
+        <section class="card">
+          <div class="section-head">
+            <h2>Coupon Matches</h2>
+            <button id="refresh-matches-btn" class="btn secondary small">Refresh</button>
+          </div>
+          <p id="match-summary" class="hint">Sign in and add groceries to see matches.</p>
+          <ul id="match-list" class="coupon-list"></ul>
+        </section>
+
+        <section class="card actions">
+          <h2>Clip Coupons</h2>
+          <p class="hint">Clips only coupons that match your grocery list. Already-clipped coupons are skipped.</p>
+          <div class="action-row">
+            <button id="clip-matching-btn" class="btn primary">Clip Matching Coupons</button>
+            <button id="clip-all-btn" class="btn secondary">Clip All Available</button>
+          </div>
+          <pre id="clip-result" class="result hidden"></pre>
+        </section>
+      </section>
+
+      <div id="toast" class="toast hidden" role="status"></div>
+    </main>
+  </div>
+
+  <script src="/static/app.js" type="module"></script>
+</body>
+</html>
