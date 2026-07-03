@@ -89,6 +89,26 @@ h2 {
   box-shadow: var(--shadow);
 }
 
+.steps {
+  margin: 12px 0 0 18px;
+  padding: 0;
+}
+
+.steps li {
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.code-block {
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #101828;
+  color: #f8fafc;
+  font-size: 0.82rem;
+  word-break: break-all;
+}
+
 .notice {
   margin: 12px 0 16px;
   padding: 12px 14px;

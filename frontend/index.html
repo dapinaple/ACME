@@ -25,95 +25,49 @@
     </header>
 
     <main>
-      <section id="login-section" class="card">
-        <h2>Sign in to ACME for U</h2>
-        <p class="hint">Sign in with the same phone number or email you use for ACME for U.</p>
+      <section class="card">
+        <h2>Works with your normal ACME login</h2>
+        <p class="hint">ACME doesn't allow third-party apps to sign in with phone verification. Instead, this tool runs <strong>inside Safari on acmemarkets.com</strong> while you're already logged in — the same way the website and app work.</p>
 
         <div class="notice">
-          <strong>Signed up in the app with text verification only?</strong>
-          <p>You need to create a password first. Use <a href="https://www.acmemarkets.com/account/forgot-password.html" target="_blank" rel="noopener">Forgot Password</a> on acmemarkets.com with your phone number, then sign in here with that phone number and your new password.</p>
+          <strong>Best for iPhone users (including app-only accounts)</strong>
+          <p>No password needed for our app. Sign in on ACME's website with your phone number like you normally do, then use the clipper panel there.</p>
         </div>
 
-        <form id="login-form">
-          <label>
-            Phone or email
-            <input type="text" id="email" autocomplete="username" required placeholder="(555) 555-1234 or you@example.com" inputmode="email">
-          </label>
-          <label>
-            Password
-            <input type="password" id="password" autocomplete="current-password" required placeholder="Set one via Forgot Password if needed">
-          </label>
+        <ol class="steps">
+          <li>Install the free <a href="https://apps.apple.com/app/userscripts/id1463298887" target="_blank" rel="noopener">Userscripts</a> app from the App Store.</li>
+          <li>In Userscripts, tap <strong>+</strong> → <strong>From URL</strong> and paste:
+            <div class="code-block" id="script-url">Loading script URL...</div>
+            <button type="button" class="btn secondary small" id="copy-script-url">Copy script URL</button>
+          </li>
+          <li>Enable the script, then open <a href="https://www.acmemarkets.com/foru/coupons-deals.html" target="_blank" rel="noopener">ACME Coupons &amp; Deals</a> in <strong>Safari</strong>.</li>
+          <li>Sign in with your <strong>phone number</strong> on ACME's site (text verification works here).</li>
+          <li>Tap the red <strong>A</strong> button → enter your grocery list → <strong>Clip Matching Coupons</strong>.</li>
+        </ol>
+      </section>
 
-          <div class="store-finder">
-            <label>
-              Find your store
-              <div class="inline-form">
-                <input type="text" id="zip-code" inputmode="numeric" maxlength="5" placeholder="ZIP code (e.g. 19103)">
-                <button type="button" class="btn secondary small" id="find-stores-btn">Find Stores</button>
-              </div>
-            </label>
-            <p class="hint">Enter your ZIP code and pick your ACME location. No store code hunting required.</p>
-            <ul id="store-results" class="store-results hidden"></ul>
-            <input type="hidden" id="store-id" required>
-            <p id="selected-store" class="selected-store hidden"></p>
-          </div>
+      <section class="card">
+        <h2>Plan your grocery list here</h2>
+        <p class="hint">Build your list below, then copy it into the clipper panel on acmemarkets.com.</p>
 
-          <details class="help">
-            <summary>Already know your Store ID?</summary>
-            <label>
-              Store ID
-              <input type="text" id="manual-store-id" inputmode="numeric" pattern="[0-9]+" placeholder="e.g. 2668">
-            </label>
-            <p class="hint">Optional. You can also find it in the ACME app under Account → My Store, or on a weekly ad link as <code>storeId=####</code>.</p>
-          </details>
-          <button type="submit" class="btn primary" id="login-btn" disabled>Sign In</button>
+        <form id="add-item-form" class="inline-form">
+          <input type="text" id="new-item" placeholder="e.g. milk, chicken, cereal" autocomplete="off">
+          <button type="submit" class="btn primary small">Add</button>
         </form>
-      </section>
 
-      <section id="dashboard" class="hidden">
-        <div class="status-bar card">
-          <div>
-            <strong id="user-email"></strong>
-            <span class="muted">Store <span id="user-store"></span></span>
-          </div>
-          <button id="logout-btn" class="btn ghost">Sign Out</button>
+        <ul id="grocery-list" class="item-list"></ul>
+        <p id="empty-list" class="empty">No items yet.</p>
+
+        <div class="action-row">
+          <button type="button" class="btn secondary" id="copy-list-btn">Copy list for ACME site</button>
+          <button type="button" class="btn ghost" id="clear-list-btn">Clear</button>
         </div>
-
-        <section class="card">
-          <div class="section-head">
-            <h2>Grocery List</h2>
-            <button id="sync-list-btn" class="btn secondary small">Sync from ACME</button>
-          </div>
-          <p class="hint">Add items you plan to buy. We'll match them to available digital coupons.</p>
-
-          <form id="add-item-form" class="inline-form">
-            <input type="text" id="new-item" placeholder="e.g. milk, chicken, cereal" autocomplete="off">
-            <button type="submit" class="btn primary small">Add</button>
-          </form>
-
-          <ul id="grocery-list" class="item-list"></ul>
-          <p id="empty-list" class="empty">No items yet. Add a few groceries to get started.</p>
-        </section>
-
-        <section class="card">
-          <div class="section-head">
-            <h2>Coupon Matches</h2>
-            <button id="refresh-matches-btn" class="btn secondary small">Refresh</button>
-          </div>
-          <p id="match-summary" class="hint">Sign in and add groceries to see matches.</p>
-          <ul id="match-list" class="coupon-list"></ul>
-        </section>
-
-        <section class="card actions">
-          <h2>Clip Coupons</h2>
-          <p class="hint">Clips only coupons that match your grocery list. Already-clipped coupons are skipped.</p>
-          <div class="action-row">
-            <button id="clip-matching-btn" class="btn primary">Clip Matching Coupons</button>
-            <button id="clip-all-btn" class="btn secondary">Clip All Available</button>
-          </div>
-          <pre id="clip-result" class="result hidden"></pre>
-        </section>
       </section>
+
+      <details class="card help">
+        <summary>Why doesn't sign-in work in this app?</summary>
+        <p class="hint">ACME uses private login systems for their app and website. Third-party tools can't use phone-text login, and ACME has disabled the old password API this project originally used. Running the clipper directly on <code>acmemarkets.com</code> avoids that problem entirely.</p>
+      </details>
 
       <div id="toast" class="toast hidden" role="status"></div>
     </main>

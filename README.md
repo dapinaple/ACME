@@ -1,34 +1,33 @@
 # ACME Coupon Clipper
 
-A mobile-friendly web app that automatically clips **ACME Markets** digital coupons based on your grocery list. Open it in Safari on your iPhone and add it to your Home Screen — no App Store or Xcode required.
+Automatically clip **ACME Markets** digital coupons based on your grocery list — on **iPhone**, without Xcode or a separate login.
+
+## Important: how login works
+
+ACME does **not** let third-party apps sign in the way their app and website do. If you created your account with **phone text verification**, you generally **cannot** sign into external tools directly.
+
+**The supported approach:** use the **Safari clipper** while logged into [acmemarkets.com](https://www.acmemarkets.com) with your normal phone login.
+
+## iPhone setup (recommended)
+
+1. Run this project locally or on a server you control (`docker compose up --build`)
+2. Open the app URL in Safari on your iPhone
+3. Install the free [Userscripts](https://apps.apple.com/app/userscripts/id1463298887) app
+4. In Userscripts, add this script URL from your server:
+
+   `http://<your-server>/static/acme-clipper.user.js`
+
+5. Open [ACME Coupons & Deals](https://www.acmemarkets.com/foru/coupons-deals.html) in Safari
+6. Sign in with your **phone number** on ACME's site
+7. Tap the red **A** button → enter your grocery list → **Clip Matching Coupons**
+
+You can plan your list in this app's home screen and tap **Copy list for ACME site**.
 
 ## What it does
 
-1. Signs in with your existing **ACME for U** account
-2. Lets you build a grocery list (or sync items from your ACME app list)
-3. Finds digital coupons that match items on your list
-4. Clips those coupons to your loyalty card with one tap
-
-ACME does **not** offer a public developer API. This app uses the same internal platform that powers the ACME/Safeway mobile apps (Albertsons Okta login + Nimbus coupon services). That means:
-
-- You need your ACME for U **phone number or email** and a **password**
-- You need your local **Store ID** (use ZIP lookup in the app — see below)
-- The app should be run on a server **you control** (your computer, a VPS, or Docker) — credentials are sent to Albertsons' login service from that server, not stored permanently
-
-## App-only account? (phone verification, no password)
-
-If you created your ACME account in the mobile app using **text message verification** and never set a password, this clipper cannot sign you in yet — it uses password login, not SMS codes.
-
-**Fix (one time, ~2 minutes):**
-
-1. Go to [acmemarkets.com Forgot Password](https://www.acmemarkets.com/account/forgot-password.html)
-2. Enter the **phone number** tied to your ACME for U account
-3. Complete the verification text and **create a password**
-4. Return to this app and sign in with that **phone number + password**
-
-ACME's own FAQ recommends the Forgot Password flow when you have an account but don't know your password.
-
-**Why not SMS login in this app?** The ACME app uses a private phone-verification flow that isn't available to third-party tools. Password login is the supported workaround.
+1. You stay logged in on ACME's own website (phone verification works)
+2. The userscript adds a clipper panel on coupon pages
+3. It matches coupons to your grocery list and clicks Clip for you
 
 ## Quick start (Docker)
 
@@ -36,87 +35,45 @@ ACME's own FAQ recommends the Forgot Password flow when you have an account but 
 docker compose up --build
 ```
 
-Then open `http://localhost:8000` on your phone (same Wi‑Fi) or computer.
+Then open `http://<your-computer-ip>:8000` on your iPhone.
 
-### iPhone: Add to Home Screen
+### Add to Home Screen
 
 1. Open the app URL in **Safari**
-2. Tap the **Share** button
-3. Choose **Add to Home Screen**
-4. Launch it like a native app
+2. Tap **Share** → **Add to Home Screen**
 
-## Quick start (without Docker)
+This home screen app is mainly for instructions and grocery-list planning. The actual clipping happens on acmemarkets.com.
 
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
+## Finding your store
 
-Visit `http://<your-computer-ip>:8000` from your iPhone.
+You don't need a store ID for the Safari clipper — ACME's site already knows your store when you're signed in.
 
-## Finding your Store ID
-
-You no longer need to hunt for a store code on the website. On the sign-in screen:
-
-1. Enter your **ZIP code**
-2. Tap **Find Stores**
-3. Tap your ACME location from the list
-
-The app fills in the Store ID automatically.
-
-**Other ways to find it:**
-- In the **ACME app**: Account → My Store (store number may appear there)
-- On **acmemarkets.com**: if you're signed in, open the Weekly Ad — the URL may contain `storeId=####`
-
-To refresh the built-in store list later, run:
-
-```bash
-cd backend && python3 scripts/build_store_index.py
-```
+The ZIP-based store finder in the backend is only for the legacy server login mode, which no longer works because ACME rotated their private API credentials.
 
 ## How coupon matching works
 
-The app compares keywords from your grocery list (e.g. "milk", "chicken", "cereal") against coupon titles, brands, and descriptions. Only unclipped coupons with a strong keyword overlap are suggested.
-
-You can also use **Clip All Available** to load every coupon on your account (similar to other community coupon clippers).
+The clipper compares keywords from your grocery list (e.g. "milk", "chicken", "cereal") against coupon text on the page and clicks Clip on matches.
 
 ## Project structure
 
 ```
-backend/
-  acme_client.py   # Albertsons/ACME API integration
-  matcher.py       # Grocery list → coupon matching
-  main.py          # FastAPI server
 frontend/
-  index.html       # Mobile UI
-  app.js           # App logic
-  styles.css       # iPhone-friendly styling
-  manifest.json    # PWA manifest
-  sw.js            # Offline shell caching
+  acme-clipper.user.js   # Runs on acmemarkets.com in Safari (main clipper)
+  index.html             # iPhone guide + grocery list planner
+backend/                 # Legacy server mode (login currently broken)
 ```
-
-## Security notes
-
-- Sessions expire after 8 hours
-- Passwords are used only for the initial Okta login and are not saved to disk
-- For best security, self-host on your home network or a private server
-- This is an unofficial tool and is not affiliated with ACME Markets or Albertsons
 
 ## Limitations
 
-- ACME may change their internal APIs at any time
-- Grocery list sync depends on what the ACME backend exposes for your account; you can always add items manually
-- Accounts created app-only with SMS verification require setting a password via Forgot Password before this app can sign in
-- Multi-factor authentication on your ACME account may block password-based login
+- Requires the Userscripts Safari extension (free)
+- Only clips coupons visible on the current ACME coupons page (use "Load More" in the panel)
+- Unofficial tool — not affiliated with ACME Markets or Albertsons
+- ACME may change their website layout, which can break the clipper until it's updated
 
 ## Development
 
-Run matcher tests:
-
 ```bash
-cd backend
-python -m pytest tests/ -q
+cd backend && python3 -m pytest tests/ -q
 ```
 
 ## License
