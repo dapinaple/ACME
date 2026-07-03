@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 from acme_client import AcmeAuthError, AcmeClient, AcmeClientError
 from matcher import CouponMatch, match_coupons_to_list
+from store_lookup import StoreLookupError, search_stores
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(os.path.dirname(APP_DIR), "frontend")
@@ -94,6 +95,15 @@ def _match_to_dict(match: CouponMatch) -> dict[str, Any]:
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/api/stores/search")
+def store_search(zip: str | None = None, q: str | None = None) -> dict[str, Any]:
+    try:
+        stores = search_stores(zip_code=zip, query=q)
+    except StoreLookupError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"stores": stores, "count": len(stores)}
 
 
 @app.post("/api/auth/login")

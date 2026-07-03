@@ -42,10 +42,23 @@ Visit `http://<your-computer-ip>:8000` from your iPhone.
 
 ## Finding your Store ID
 
-1. Go to [local.acmemarkets.com](https://local.acmemarkets.com/acme.html)
-2. Find your store
-3. Hover over **Weekly Ad** and look at the link — it contains `storeId=####`
-4. Enter that number in the app
+You no longer need to hunt for a store code on the website. On the sign-in screen:
+
+1. Enter your **ZIP code**
+2. Tap **Find Stores**
+3. Tap your ACME location from the list
+
+The app fills in the Store ID automatically.
+
+**Other ways to find it:**
+- In the **ACME app**: Account → My Store (store number may appear there)
+- On **acmemarkets.com**: if you're signed in, open the Weekly Ad — the URL may contain `storeId=####`
+
+To refresh the built-in store list later, run:
+
+```bash
+cd backend && python3 scripts/build_store_index.py
+```
 
 ## How coupon matching works
 
